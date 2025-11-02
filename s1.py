@@ -9,18 +9,18 @@ from tensorflow.keras.layers import Dense,Flatten
 from tensorflow.keras.models import load_model
 import cv2
 
+# Load the model
+model=load_model('model.h5')
+
+# Create main window
 a=tk.Tk()
+a.title("Digit Recognition")
+a.geometry("500x550")
 
 def draw(event):
     x1,y1=(event.x-1),(event.y-1)
     x2,y2=(event.x+1),(event.y+1)
-    canvas.create_oval(x1,y1,x2,y2,fill="black",width=5)
-
-canvas=tk.Canvas(a,width=400,height=400,bg="white")
-canvas.pack()
-canvas.bind('<B1-Motion>',draw)
-a.mainloop()
-
+    canvas.create_oval(x1,y1,x2,y2,fill="black",width=10)
 
 def capture_canvas(canvas):
     x = a.winfo_rootx() + canvas.winfo_x()
@@ -40,8 +40,47 @@ def preprocessing(img):
     processed=normalized.reshape(1,28,28,1)
     return processed
 
+def predict_digit():
+    try:
+        img=capture_canvas(canvas)
+        processed=preprocessing(img)
+        prediction=model.predict(processed,verbose=0)
+        digit=np.argmax(prediction)
+        confidence=prediction[0][digit]*100
+        result_label.config(text=f"Predicted Digit: {digit}\nConfidence: {confidence:.2f}%")
+    except Exception as e:
+        result_label.config(text=f"Error: {str(e)}")
 
+def clear_canvas():
+    canvas.delete("all")
+    result_label.config(text="Draw a digit and click Predict")
 
+canvas=tk.Canvas(a,width=400,height=400,bg="white",cursor="pencil")
+canvas.pack(pady=10)
+canvas.bind('<B1-Motion>',draw)
+
+# Button frame
+button_frame=tk.Frame(a)
+button_frame.pack(pady=10)
+
+# Predict button
+predict_btn=tk.Button(button_frame,text="Predict Digit",command=predict_digit,
+                     bg="#4CAF50",fg="white",font=("Arial",12,"bold"),
+                     padx=20,pady=10)
+predict_btn.pack(side=tk.LEFT,padx=5)
+
+# Clear button
+clear_btn=tk.Button(button_frame,text="Clear",command=clear_canvas,
+                   bg="#f44336",fg="white",font=("Arial",12,"bold"),
+                   padx=20,pady=10)
+clear_btn.pack(side=tk.LEFT,padx=5)
+
+# Result label
+result_label=tk.Label(a,text="Draw a digit and click Predict",
+                     font=("Arial",14,"bold"),fg="#2196F3")
+result_label.pack(pady=10)
+
+a.mainloop()
 
 
 '''def CNNModel():
@@ -56,10 +95,3 @@ def preprocessing(img):
     model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
     
     return model'''
-
-
-model=load_model('model.h5')
-
-    
-    
-
