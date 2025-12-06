@@ -3,10 +3,9 @@ from tkinter import *
 from PIL import Image,ImageGrab
 import numpy as np
 #CNN model
-from tensorflow.keras.layers import Conv2D,MaxPooling2D
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense,Flatten
+import tensorflow as tf
 from tensorflow.keras.models import load_model
+
 import cv2
 
 # Load the model
