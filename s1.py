@@ -1,3 +1,9 @@
+import ctypes
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+except Exception:
+    ctypes.windll.user32.SetProcessDPIAware()
+
 import tkinter as tk
 from tkinter import *
 from PIL import Image,ImageGrab
@@ -14,7 +20,7 @@ model=load_model('model.h5')
 # Create main window
 a=tk.Tk()
 a.title("Digit Recognition")
-a.geometry("500x550")
+a.geometry("500x650")
 
 def draw(event):
     x1,y1=(event.x-1),(event.y-1)
